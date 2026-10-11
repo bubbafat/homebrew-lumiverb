@@ -50,8 +50,16 @@ this Mac. Finish it before putting a tunnel or proxy in front of Lumiverb
 so until then they could create that account too.
 
 Lumiverb reads your library folders where they are, so a library's folder
-can be chosen only on this Mac, too. A tunnel or proxy in front of Lumiverb
-opens that to whoever reaches it, for as long as it's there.
+can be chosen only on this Mac, too. And Forgot password on this Mac gives the
+reset link at once, since there's no email set up. A tunnel or proxy in front
+of Lumiverb opens both to whoever reaches it, for as long as it's there:
+choosing folders, and resetting any account's password.
+
+Forgot your password? Use Forgot password on this Mac, or in Terminal:
+
+```sh
+lumiverb-server reset-password --env "$(brew --prefix)/etc/lumiverb/env"
+```
 
 It starts again at login. On its first start it makes its own PostgreSQL
 (not Homebrew's: nothing is shared with another you run) and its databases.

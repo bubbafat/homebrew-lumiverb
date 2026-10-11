@@ -79,6 +79,8 @@ class Lumiverb < Formula
   # Homebrew's postgresql@18 and nginx are programs here, never services.
   # --local-roots: this Mac has the files, so the scheduler reads each library
   # folder where it is (said in the env file, never assumed).
+  # --reset-on-this-machine: whoever is at this Mac owns it, so Forgot password
+  # here gives the reset link at once (it has no email set up).
   post_install_steps do
     mkdir_p "{{var}}/log"
     run "lumiverb-server", base:           :bin,
@@ -91,7 +93,8 @@ class Lumiverb < Formula
                                             "--nginx-bin", "{{HOMEBREW_PREFIX}}/opt/nginx/bin/nginx",
                                             "--nginx-config", "{{etc}}/lumiverb/nginx.conf",
                                             "--web-root", "{{opt_prefix}}/libexec/src/ui/web/dist",
-                                            "--local-roots"],
+                                            "--local-roots",
+                                            "--reset-on-this-machine"],
                            print_stdout:   true,
                            writable_paths: ["{{etc}}/lumiverb", "{{var}}/lumiverb"]
   end
