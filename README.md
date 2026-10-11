@@ -65,8 +65,11 @@ brew upgrade lumiverb
 ```
 
 It restarts itself into the new version: no `brew services restart` needed.
-An install made with `--HEAD` stays on `main`; to move it to releases, stop
-it, then uninstall and install again (its settings, account and data stay):
+An install made with `--HEAD` stays on `main`. To move it to releases, once
+a release is at least as new as it (`brew info lumiverb` shows both: a newer
+install has already migrated its database past what the release knows),
+stop it, then uninstall and install again (its settings, account and data
+stay):
 
 ```sh
 brew services stop lumiverb && brew uninstall lumiverb && brew install bubbafat/lumiverb/lumiverb && brew services start lumiverb
