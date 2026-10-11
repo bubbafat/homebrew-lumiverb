@@ -63,6 +63,8 @@ class Lumiverb < Formula
 
       MachO::Tools.change_dylib_id(file.to_s, "@rpath/#{File.basename(id)}")
       MachO.codesign!(file.to_s)
+    rescue MachO::NotAMachOError
+      next # not a Mac library at all (a stray Linux .so): nothing to keep
     end
   end
 
