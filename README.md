@@ -8,14 +8,14 @@ its own PostgreSQL, Quickwit and nginx. The Linux "brain" installs with
 ## Install
 
 ```sh
-brew trust --tap bubbafat/lumiverb && brew install --HEAD bubbafat/lumiverb/lumiverb
+brew trust --tap bubbafat/lumiverb && brew install bubbafat/lumiverb/lumiverb
 ```
 
 Homebrew installs from a tap that isn't its own only once you trust it:
 `brew trust` does that once. Without it the install stops at Quickwit, which
 comes from this tap too.
 
-It builds from `main` (there are no releases yet), and brings PostgreSQL 18
+It installs the latest release (`--HEAD` instead: `main`), and brings PostgreSQL 18
 with pgvector, nginx, ffmpeg, exiftool, libvips, and Quickwit 0.8.2 from this
 tap.
 
@@ -61,8 +61,15 @@ API, the scheduler and upkeep; stopping it stops them all.
 ## Upgrade
 
 ```sh
-brew upgrade --fetch-HEAD lumiverb
-brew services restart lumiverb
+brew upgrade lumiverb
+```
+
+It restarts itself into the new version: no `brew services restart` needed.
+An install made with `--HEAD` stays on `main`; to move it to releases, stop
+it, then uninstall and install again (its settings, account and data stay):
+
+```sh
+brew services stop lumiverb && brew uninstall lumiverb && brew install bubbafat/lumiverb/lumiverb && brew services start lumiverb
 ```
 
 ## Ports
