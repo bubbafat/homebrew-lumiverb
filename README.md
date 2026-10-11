@@ -38,6 +38,9 @@ brew services start lumiverb
 `lumiverb` migrates its databases when it starts, then runs the API, the
 scheduler and upkeep. The web app is at <http://localhost:6464>.
 
+The services can start in any order: `lumiverb` waits for PostgreSQL, and
+search uses PostgreSQL until Quickwit answers.
+
 Creating the first account and admin user isn't automated yet.
 
 ## Upgrade

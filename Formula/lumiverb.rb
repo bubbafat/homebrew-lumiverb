@@ -63,8 +63,9 @@ class Lumiverb < Formula
 
   def caveats
     <<~EOS
-      Lumiverb runs as three services, plus PostgreSQL:
+      First run: PostgreSQL, its control database, then the three services:
         brew services start postgresql@18
+        "#{formula_opt_bin("postgresql@18")}/createdb" control_plane
         brew services start quickwit
         brew services start nginx
         brew services start lumiverb
@@ -86,5 +87,8 @@ class Lumiverb < Formula
   test do
     assert_match "lumiverb-server", shell_output("#{bin}/lumiverb-server --help")
     system libexec/".venv/bin/python", "-c", "import pyvips; assert pyvips.API_mode"
+    # Python through its opt path: a Cellar one is gone after python@3.12's next upgrade.
+    refute_match "/Cellar/", (libexec/".venv/pyvenv.cfg").read
+    refute_match "/Cellar/", (libexec/".venv/bin/python").readlink.to_s
   end
 end
