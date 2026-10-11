@@ -69,27 +69,32 @@ class Lumiverb < Formula
   end
 
   # On every install and upgrade: each file only if it isn't there, so
-  # nothing here (the secrets above all) is ever rewritten. That's why the
-  # web root is the opt path: init's default is this keg's own (Cellar/<version>),
-  # which `brew cleanup` deletes after an upgrade, and the site would keep it.
+  # nothing here (the secrets above all) is ever rewritten. That's why every
+  # path is an opt one: a keg's own (Cellar/<version>) is gone after an
+  # upgrade and `brew cleanup`, and the files would keep it. The env file
+  # names what `lumiverb-server run` starts: Lumiverb's own PostgreSQL (made
+  # on its first start, in var/lumiverb/postgres), Quickwit and nginx, so
+  # Homebrew's postgresql@18 and nginx are programs here, never services.
   post_install_steps do
     mkdir_p "{{var}}/log"
     run "lumiverb-server", base:           :bin,
                            args:           ["init",
                                             "--env", "{{etc}}/lumiverb/env",
                                             "--data-dir", "{{var}}/lumiverb",
+                                            "--pg-bin", "{{HOMEBREW_PREFIX}}/opt/postgresql@18/bin",
+                                            "--quickwit-bin", "{{HOMEBREW_PREFIX}}/opt/quickwit/bin/quickwit",
                                             "--quickwit-config", "{{etc}}/lumiverb/quickwit.yaml",
-                                            "--nginx-site", "{{etc}}/nginx/servers/lumiverb.conf",
+                                            "--nginx-bin", "{{HOMEBREW_PREFIX}}/opt/nginx/bin/nginx",
+                                            "--nginx-config", "{{etc}}/lumiverb/nginx.conf",
                                             "--web-root", "{{opt_prefix}}/libexec/src/ui/web/dist"],
                            print_stdout:   true,
-                           writable_paths: ["{{etc}}/lumiverb", "{{etc}}/nginx/servers", "{{var}}/lumiverb"]
+                           writable_paths: ["{{etc}}/lumiverb", "{{var}}/lumiverb"]
   end
 
   def caveats
     <<~EOS
-      To start Lumiverb and what it needs, paste this into Terminal
-      (Homebrew's own suggestion below starts only one of the four):
-        brew services start postgresql@18 && brew services start quickwit && brew services start nginx && brew services start lumiverb
+      To start Lumiverb (it starts again at login):
+        brew services start lumiverb
 
       Then open http://localhost:6464 on this Mac to create your account.
 
@@ -97,10 +102,15 @@ class Lumiverb < Formula
     EOS
   end
 
-  # Migrates, then runs the API, the scheduler and upkeep (lumiverb-server run).
+  # Everything: its PostgreSQL, Quickwit and nginx, migrations, then the API,
+  # the scheduler and upkeep (lumiverb-server run).
   service do
     run [opt_bin/"lumiverb-server", "run", "--env", etc/"lumiverb/env"]
     keep_alive true
+    # launchd's ExitTimeOut: run stops its children one after another, each
+    # given its own time (240 s at the longest; a test in lumiverb holds it).
+    # launchd's default, 20 s, would kill PostgreSQL mid-shutdown.
+    stop_timeout 240
     log_path var/"log/lumiverb.log"
     error_log_path var/"log/lumiverb.log"
     environment_variables PATH: std_service_path_env
