@@ -26,7 +26,7 @@ isn't there yet**:
 |---|---|
 | `$(brew --prefix)/etc/lumiverb/env` | The settings, with generated secrets (mode 600). Yours to edit. |
 | `$(brew --prefix)/etc/lumiverb/quickwit.yaml` | Quickwit's config |
-| `$(brew --prefix)/etc/lumiverb/nginx.conf` | nginx's: the web app on port 6464, for this Mac only |
+| `$(brew --prefix)/etc/lumiverb/nginx.conf` | nginx's: the web app on port 6464 (where it listens: Settings › Network) |
 
 Data goes in `$(brew --prefix)/var/lumiverb` (its database in `postgres/`
 there), the log in `$(brew --prefix)/var/log/lumiverb.log`.
@@ -50,8 +50,25 @@ this Mac. Finish it before putting a tunnel or proxy in front of Lumiverb
 so until then they could create that account too.
 
 Lumiverb reads your library folders where they are, so a library's folder
-can be chosen only on this Mac, too. A tunnel or proxy in front of Lumiverb
-opens that to whoever reaches it, for as long as it's there.
+can be chosen only on this Mac, too. And Forgot password on this Mac gives the
+reset link at once, since there's no email set up. A tunnel or proxy in front
+of Lumiverb opens both to whoever reaches it, for as long as it's there:
+choosing folders, and resetting any account's password.
+
+To use Lumiverb from a phone or another computer, an admin turns on Settings ›
+Network › Let other devices on my network use Lumiverb, on this Mac. It shows
+the addresses to open (`http://<this Mac's name>.local:6464`, and its IP
+address for devices that can't use the name). Only do it on a network you
+trust: the connection isn't encrypted.
+
+To add people, Admin › Manage users › Invite someone gives you a link to send
+them (it works once, for 7 days); they choose their own password there.
+
+Forgot your password? Use Forgot password on this Mac, or in Terminal:
+
+```sh
+lumiverb-server reset-password --env "$(brew --prefix)/etc/lumiverb/env"
+```
 
 It starts again at login. On its first start it makes its own PostgreSQL
 (not Homebrew's: nothing is shared with another you run) and its databases.
@@ -79,7 +96,7 @@ brew services stop lumiverb && brew uninstall lumiverb && brew install bubbafat/
 
 | | Port |
 |---|---|
-| Web (nginx) | 6464, this Mac only |
+| Web (nginx) | 6464, this Mac only until Settings › Network says other devices may use it |
 | API | 6465, this Mac only |
 | Quickwit | 6466 (gRPC 6467), this Mac only |
 | PostgreSQL | 6468, Lumiverb's own, this Mac only |
