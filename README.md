@@ -49,6 +49,10 @@ this Mac. Finish it before putting a tunnel or proxy in front of Lumiverb
 (`tailscale serve`, cloudflared, ngrok): their requests arrive from this Mac,
 so until then they could create that account too.
 
+Lumiverb reads your library folders where they are, so a library's folder
+can be chosen only on this Mac, too. A tunnel or proxy in front of Lumiverb
+opens that to whoever reaches it, for as long as it's there.
+
 It starts again at login. On its first start it makes its own PostgreSQL
 (not Homebrew's: nothing is shared with another you run) and its databases.
 Every start, it runs PostgreSQL, Quickwit and nginx, migrates, then runs the
