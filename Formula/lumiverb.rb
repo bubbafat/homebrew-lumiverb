@@ -87,15 +87,12 @@ class Lumiverb < Formula
 
   def caveats
     <<~EOS
-      First run: PostgreSQL, its control database, then the three services:
-        brew services start postgresql@18
-        "#{formula_opt_bin("postgresql@18")}/createdb" control_plane
-        brew services start quickwit
-        brew services start nginx
-        brew services start lumiverb
+      To start Lumiverb, paste this into Terminal:
+        brew services start postgresql@18 && brew services start quickwit && brew services start nginx && brew services start lumiverb
+
+      Then open http://localhost:6464 on this Mac to create your account.
 
       Its settings are in #{etc}/lumiverb/env (written once; yours to edit).
-      The web app is at http://localhost:6464 once it's running.
     EOS
   end
 

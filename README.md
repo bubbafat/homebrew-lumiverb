@@ -21,27 +21,32 @@ isn't there yet**:
 |---|---|
 | `$(brew --prefix)/etc/lumiverb/env` | The settings, with generated secrets (mode 600). Yours to edit. |
 | `$(brew --prefix)/etc/lumiverb/quickwit.yaml` | Quickwit's config |
-| `$(brew --prefix)/etc/nginx/servers/lumiverb.conf` | The web app on port 6464 |
+| `$(brew --prefix)/etc/nginx/servers/lumiverb.conf` | The web app on port 6464, for this Mac only |
 
 Data goes in `$(brew --prefix)/var/lumiverb`, logs in `$(brew --prefix)/var/log`.
 
 ## First run
 
 ```sh
-brew services start postgresql@18
-"$(brew --prefix postgresql@18)/bin/createdb" control_plane
-brew services start quickwit
-brew services start nginx
-brew services start lumiverb
+brew services start postgresql@18 && brew services start quickwit && brew services start nginx && brew services start lumiverb
 ```
 
-`lumiverb` migrates its databases when it starts, then runs the API, the
-scheduler and upkeep. The web app is at <http://localhost:6464>.
+Then open <http://localhost:6464> on this Mac and create your account: you
+look after this Lumiverb, and can add people later. Or, in Terminal:
 
-The services can start in any order: `lumiverb` waits for PostgreSQL, and
-search uses PostgreSQL until Quickwit answers.
+```sh
+lumiverb-server setup --env "$(brew --prefix)/etc/lumiverb/env"
+```
 
-Creating the first account and admin user isn't automated yet.
+Either works only until the first account exists, and the web page only on
+this Mac. Finish it before putting a tunnel or proxy in front of Lumiverb
+(`tailscale serve`, cloudflared, ngrok): their requests arrive from this Mac,
+so until then they could create that account too.
+
+`lumiverb` makes its database and migrates it when it starts, then runs the
+API, the scheduler and upkeep. The services can start in any order:
+`lumiverb` waits for PostgreSQL, and search uses PostgreSQL until Quickwit
+answers.
 
 ## Upgrade
 
@@ -54,7 +59,7 @@ brew services restart lumiverb
 
 | | Port |
 |---|---|
-| Web (nginx) | 6464, any address |
+| Web (nginx) | 6464, this Mac only |
 | API | 6465, this Mac only |
 | Quickwit | 6466 (gRPC 6467), this Mac only |
 | PostgreSQL | 5432, Homebrew's |
