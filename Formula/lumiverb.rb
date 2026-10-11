@@ -87,7 +87,8 @@ class Lumiverb < Formula
 
   def caveats
     <<~EOS
-      To start Lumiverb, paste this into Terminal:
+      To start Lumiverb and what it needs, paste this into Terminal
+      (Homebrew's own suggestion below starts only one of the four):
         brew services start postgresql@18 && brew services start quickwit && brew services start nginx && brew services start lumiverb
 
       Then open http://localhost:6464 on this Mac to create your account.

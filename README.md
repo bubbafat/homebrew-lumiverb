@@ -7,8 +7,12 @@ The Linux "brain" installs with `scripts/deploy-api.sh` instead.
 ## Install
 
 ```sh
-brew install --HEAD bubbafat/lumiverb/lumiverb
+brew trust --tap bubbafat/lumiverb && brew install --HEAD bubbafat/lumiverb/lumiverb
 ```
+
+Homebrew installs from a tap that isn't its own only once you trust it:
+`brew trust` does that once. Without it the install stops at Quickwit, which
+comes from this tap too.
 
 It builds from `main` (there are no releases yet), and brings PostgreSQL 18
 with pgvector, nginx, ffmpeg, exiftool, libvips, and Quickwit 0.8.2 from this
@@ -26,6 +30,9 @@ isn't there yet**:
 Data goes in `$(brew --prefix)/var/lumiverb`, logs in `$(brew --prefix)/var/log`.
 
 ## First run
+
+Paste this line, not Homebrew's own suggestion after it (that starts only
+one of the four services):
 
 ```sh
 brew services start postgresql@18 && brew services start quickwit && brew services start nginx && brew services start lumiverb
