@@ -75,6 +75,8 @@ class Lumiverb < Formula
   # names what `lumiverb-server run` starts: Lumiverb's own PostgreSQL (made
   # on its first start, in var/lumiverb/postgres), Quickwit and nginx, so
   # Homebrew's postgresql@18 and nginx are programs here, never services.
+  # --local-roots: this Mac has the files, so the scheduler reads each library
+  # folder where it is (said in the env file, never assumed).
   post_install_steps do
     mkdir_p "{{var}}/log"
     run "lumiverb-server", base:           :bin,
@@ -86,7 +88,8 @@ class Lumiverb < Formula
                                             "--quickwit-config", "{{etc}}/lumiverb/quickwit.yaml",
                                             "--nginx-bin", "{{HOMEBREW_PREFIX}}/opt/nginx/bin/nginx",
                                             "--nginx-config", "{{etc}}/lumiverb/nginx.conf",
-                                            "--web-root", "{{opt_prefix}}/libexec/src/ui/web/dist"],
+                                            "--web-root", "{{opt_prefix}}/libexec/src/ui/web/dist",
+                                            "--local-roots"],
                            print_stdout:   true,
                            writable_paths: ["{{etc}}/lumiverb", "{{var}}/lumiverb"]
   end
