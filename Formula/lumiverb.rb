@@ -107,6 +107,10 @@ class Lumiverb < Formula
   service do
     run [opt_bin/"lumiverb-server", "run", "--env", etc/"lumiverb/env"]
     keep_alive true
+    # launchd's ExitTimeOut: run stops its children one after another, each
+    # given its own time (240 s at the longest; a test in lumiverb holds it).
+    # launchd's default, 20 s, would kill PostgreSQL mid-shutdown.
+    stop_timeout 240
     log_path var/"log/lumiverb.log"
     error_log_path var/"log/lumiverb.log"
     environment_variables PATH: std_service_path_env
