@@ -57,8 +57,12 @@ choosing folders, and resetting any account's password.
 
 To use Lumiverb from a phone or another computer, an admin turns on Settings ›
 Network › Let other devices on my network use Lumiverb, on this Mac. It shows
-the addresses to open (`http://<this Mac's name>.local:6464`). Only do it on a
-network you trust: the connection isn't encrypted.
+the addresses to open (`http://<this Mac's name>.local:6464`, and its IP
+address for devices that can't use the name). Only do it on a network you
+trust: the connection isn't encrypted.
+
+To add people, Admin › Manage users › Invite someone gives you a link to send
+them (it works once, for 7 days); they choose their own password there.
 
 Forgot your password? Use Forgot password on this Mac, or in Terminal:
 
