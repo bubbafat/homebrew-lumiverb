@@ -17,6 +17,8 @@ class Lumiverb < Formula
   depends_on "python@3.12"
   depends_on "vips"
 
+  preserve_rpath # the wheels' library IDs: see keep_wheel_library_ids
+
   # What the server reads at run time; the rest of the repository (the apps,
   # tests, docs) isn't installed.
   RUNTIME = %w[src migrations quickwit alembic-control.ini alembic-tenant.ini
@@ -41,7 +43,27 @@ class Lumiverb < Formula
              "--extra", "cli", "--extra", "embeddings", "--extra", "face_recognition", "--extra", "workers",
              "--no-binary-package", "pyvips", "--refresh-package", "pyvips"
     end
+    keep_wheel_library_ids(libexec/".venv")
     %w[lumiverb lumiverb-server].each { |command| bin.install_symlink libexec/".venv/bin"/command }
+  end
+
+  # The libraries wheels bring (PyAV's codecs, Pillow's, ...) find each other
+  # by @loader_path, so their own IDs are never used to load them. Homebrew
+  # rewrites every ID to a longer opt path, which doesn't fit some headers
+  # (PyAV's), failing the install. An @rpath ID is shorter than the one it
+  # replaces, and preserve_rpath keeps it. A changed library is re-signed:
+  # Apple Silicon won't load one whose signature is broken.
+  def keep_wheel_library_ids(venv)
+    # FNM_DOTMATCH: wheels keep them in hidden folders (av/.dylibs).
+    venv.glob("lib/python*/site-packages/**/*.{dylib,so}", File::FNM_DOTMATCH).each do |file|
+      next if file.symlink?
+
+      id = MachO.open(file.to_s).dylib_id # none for a Python extension (a bundle)
+      next if id.nil? || id.start_with?("@")
+
+      MachO::Tools.change_dylib_id(file.to_s, "@rpath/#{File.basename(id)}")
+      MachO.codesign!(file.to_s)
+    end
   end
 
   # On every install and upgrade: each file only if it isn't there, so
