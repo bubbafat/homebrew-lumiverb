@@ -1,8 +1,9 @@
 # Lumiverb for Homebrew
 
-[Lumiverb](https://github.com/bubbafat/lumiverb) as a server on your own Mac:
-the API, the scheduler (all processing), the web app, and the search sidecar.
-The Linux "brain" installs with `scripts/deploy-api.sh` instead.
+[Lumiverb](https://github.com/bubbafat/lumiverb) as a server on your own Mac,
+as one service: the API, the scheduler (all processing), the web app, and
+its own PostgreSQL, Quickwit and nginx. The Linux "brain" installs with
+`scripts/deploy-api.sh` instead.
 
 ## Install
 
@@ -25,17 +26,15 @@ isn't there yet**:
 |---|---|
 | `$(brew --prefix)/etc/lumiverb/env` | The settings, with generated secrets (mode 600). Yours to edit. |
 | `$(brew --prefix)/etc/lumiverb/quickwit.yaml` | Quickwit's config |
-| `$(brew --prefix)/etc/nginx/servers/lumiverb.conf` | The web app on port 6464, for this Mac only |
+| `$(brew --prefix)/etc/lumiverb/nginx.conf` | nginx's: the web app on port 6464, for this Mac only |
 
-Data goes in `$(brew --prefix)/var/lumiverb`, logs in `$(brew --prefix)/var/log`.
+Data goes in `$(brew --prefix)/var/lumiverb` (its database in `postgres/`
+there), the log in `$(brew --prefix)/var/log/lumiverb.log`.
 
 ## First run
 
-Paste this line, not Homebrew's own suggestion after it (that starts only
-one of the four services):
-
 ```sh
-brew services start postgresql@18 && brew services start quickwit && brew services start nginx && brew services start lumiverb
+brew services start lumiverb
 ```
 
 Then open <http://localhost:6464> on this Mac and create your account: you
@@ -50,10 +49,10 @@ this Mac. Finish it before putting a tunnel or proxy in front of Lumiverb
 (`tailscale serve`, cloudflared, ngrok): their requests arrive from this Mac,
 so until then they could create that account too.
 
-`lumiverb` makes its database and migrates it when it starts, then runs the
-API, the scheduler and upkeep. The services can start in any order:
-`lumiverb` waits for PostgreSQL, and search uses PostgreSQL until Quickwit
-answers.
+It starts again at login. On its first start it makes its own PostgreSQL
+(not Homebrew's: nothing is shared with another you run) and its databases.
+Every start, it runs PostgreSQL, Quickwit and nginx, migrates, then runs the
+API, the scheduler and upkeep; stopping it stops them all.
 
 ## Upgrade
 
@@ -69,9 +68,9 @@ brew services restart lumiverb
 | Web (nginx) | 6464, this Mac only |
 | API | 6465, this Mac only |
 | Quickwit | 6466 (gRPC 6467), this Mac only |
-| PostgreSQL | 5432, Homebrew's |
+| PostgreSQL | 6468, Lumiverb's own, this Mac only |
 
-They're clear of a Lumiverb dev checkout's (5173, 8000, 7280, 7281), except
-PostgreSQL: the checkout's `docker-compose.yml` maps its own to 5432 too. Change
-them in the env file; the nginx site and Quickwit's config were made from
-it, so move them away and run `brew postinstall lumiverb` to make them again.
+They're clear of Homebrew's PostgreSQL (5432) and a Lumiverb dev checkout's
+(5173, 8000, 7280, 7281). Change them in the env file; nginx's and Quickwit's
+configs were made from it, so move them away and run `brew postinstall
+lumiverb` to make them again.

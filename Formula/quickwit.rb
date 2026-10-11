@@ -1,5 +1,5 @@
 class Quickwit < Formula
-  desc "Search engine Lumiverb uses for its text search"
+  desc "Search engine Lumiverb uses for its text search (Lumiverb runs it)"
   homepage "https://quickwit.io"
   if Hardware::CPU.arm?
     url "https://github.com/quickwit-oss/quickwit/releases/download/v0.8.2/quickwit-v0.8.2-aarch64-apple-darwin.tar.gz"
@@ -15,14 +15,6 @@ class Quickwit < Formula
 
   def install
     bin.install "quickwit"
-  end
-
-  # Its config is Lumiverb's, written by `lumiverb-server init` (the lumiverb formula).
-  service do
-    run [opt_bin/"quickwit", "run", "--config", etc/"lumiverb/quickwit.yaml"]
-    keep_alive true
-    log_path var/"log/quickwit.log"
-    error_log_path var/"log/quickwit.log"
   end
 
   test do
