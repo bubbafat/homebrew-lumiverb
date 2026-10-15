@@ -1,15 +1,14 @@
 class Lumiverb < Formula
   desc "Photo and video library server: search, faces and transcripts, on your own Mac"
   homepage "https://github.com/bubbafat/lumiverb"
-  url "https://github.com/bubbafat/lumiverb/archive/refs/tags/v0.1.27.tar.gz"
-  sha256 "601123b025113c4df4ab225b51a871977096f5f0debc9eb5b6d90996cae154ca"
+  url "https://github.com/bubbafat/lumiverb/archive/refs/tags/v0.1.28.tar.gz"
+  sha256 "c6cfa87f8de482a78ec7e13090d64a130acb609ddea56d6867472404f83c60fc"
   license "MIT"
   head "https://github.com/bubbafat/lumiverb.git", branch: "main"
 
   depends_on "node" => :build
   depends_on "pkgconf" => :build # pyvips finds libvips with it
   depends_on "uv" => :build
-  depends_on "bubbafat/lumiverb/quickwit"
   depends_on "exiftool"
   depends_on "ffmpeg"
   depends_on :macos # the brain (Linux) installs with scripts/deploy-api.sh
@@ -75,7 +74,7 @@ class Lumiverb < Formula
   # path is an opt one: a keg's own (Cellar/<version>) is gone after an
   # upgrade and `brew cleanup`, and the files would keep it. The env file
   # names what `lumiverb-server run` starts: Lumiverb's own PostgreSQL (made
-  # on its first start, in var/lumiverb/postgres), Quickwit and nginx, so
+  # on its first start, in var/lumiverb/postgres) and nginx, so
   # Homebrew's postgresql@18 and nginx are programs here, never services.
   # --local-roots: this Mac has the files, so the scheduler reads each library
   # folder where it is (said in the env file, never assumed).
@@ -88,8 +87,6 @@ class Lumiverb < Formula
                                             "--env", "{{etc}}/lumiverb/env",
                                             "--data-dir", "{{var}}/lumiverb",
                                             "--pg-bin", "{{HOMEBREW_PREFIX}}/opt/postgresql@18/bin",
-                                            "--quickwit-bin", "{{HOMEBREW_PREFIX}}/opt/quickwit/bin/quickwit",
-                                            "--quickwit-config", "{{etc}}/lumiverb/quickwit.yaml",
                                             "--nginx-bin", "{{HOMEBREW_PREFIX}}/opt/nginx/bin/nginx",
                                             "--nginx-config", "{{etc}}/lumiverb/nginx.conf",
                                             "--web-root", "{{opt_prefix}}/libexec/src/ui/web/dist",
@@ -110,7 +107,7 @@ class Lumiverb < Formula
     EOS
   end
 
-  # Everything: its PostgreSQL, Quickwit and nginx, migrations, then the API,
+  # Everything: its PostgreSQL and nginx, migrations, then the API,
   # the scheduler and upkeep (lumiverb-server run).
   service do
     run [opt_bin/"lumiverb-server", "run", "--env", etc/"lumiverb/env"]
