@@ -23,7 +23,7 @@ class Lumiverb < Formula
 
   # What the server reads at run time; the rest of the repository (the apps,
   # tests, docs) isn't installed.
-  RUNTIME = %w[src migrations quickwit alembic-control.ini alembic-tenant.ini
+  RUNTIME = %w[src migrations alembic-control.ini alembic-tenant.ini
                pyproject.toml uv.lock README.md LICENSE].freeze
 
   def install
