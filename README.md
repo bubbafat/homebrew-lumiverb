@@ -2,7 +2,7 @@
 
 [Lumiverb](https://github.com/bubbafat/lumiverb) as a server on your own Mac,
 as one service: the API, the scheduler (all processing), the web app, and
-its own PostgreSQL, Quickwit and nginx. The Linux "brain" installs with
+its own PostgreSQL (its search too) and nginx. The Linux "brain" installs with
 `scripts/deploy-api.sh` instead.
 
 ## Install
@@ -12,12 +12,10 @@ brew trust --tap bubbafat/lumiverb && brew install bubbafat/lumiverb/lumiverb
 ```
 
 Homebrew installs from a tap that isn't its own only once you trust it:
-`brew trust` does that once. Without it the install stops at Quickwit, which
-comes from this tap too.
+`brew trust` does that once.
 
 It installs the latest release (`--HEAD` instead: `main`), and brings PostgreSQL 18
-with pgvector, nginx, ffmpeg, exiftool, libvips, and Quickwit 0.8.2 from this
-tap.
+with pgvector, nginx, ffmpeg, exiftool and libvips.
 
 On install (and every upgrade) `lumiverb-server init` writes, **only if it
 isn't there yet**:
@@ -25,7 +23,6 @@ isn't there yet**:
 | File | What |
 |---|---|
 | `$(brew --prefix)/etc/lumiverb/env` | The settings, with generated secrets (mode 600). Yours to edit. |
-| `$(brew --prefix)/etc/lumiverb/quickwit.yaml` | Quickwit's config |
 | `$(brew --prefix)/etc/lumiverb/nginx.conf` | nginx's: the web app on port 6464 (where it listens: Settings › Network) |
 
 Data goes in `$(brew --prefix)/var/lumiverb` (its database in `postgres/`
@@ -72,7 +69,7 @@ lumiverb-server reset-password --env "$(brew --prefix)/etc/lumiverb/env"
 
 It starts again at login. On its first start it makes its own PostgreSQL
 (not Homebrew's: nothing is shared with another you run) and its databases.
-Every start, it runs PostgreSQL, Quickwit and nginx, migrates, then runs the
+Every start, it runs PostgreSQL and nginx, migrates, then runs the
 API, the scheduler and upkeep; stopping it stops them all.
 
 ## Upgrade
@@ -82,6 +79,11 @@ brew upgrade lumiverb
 ```
 
 It restarts itself into the new version: no `brew services restart` needed.
+
+From 0.1.27, search is in Lumiverb's own PostgreSQL; from 0.1.28 Quickwit
+isn't used at all, and the upgrade removes what it kept (its index and
+config). Homebrew leaves the program itself installed:
+`brew uninstall bubbafat/lumiverb/quickwit` removes it.
 An install made with `--HEAD` stays on `main`. To move it to releases, once
 a release is at least as new as it (`brew info lumiverb` shows both: a newer
 install has already migrated its database past what the release knows),
@@ -98,10 +100,8 @@ brew services stop lumiverb && brew uninstall lumiverb && brew install bubbafat/
 |---|---|
 | Web (nginx) | 6464, this Mac only until Settings › Network says other devices may use it |
 | API | 6465, this Mac only |
-| Quickwit | 6466 (gRPC 6467), this Mac only |
 | PostgreSQL | 6468, Lumiverb's own, this Mac only |
 
 They're clear of Homebrew's PostgreSQL (5432) and a Lumiverb dev checkout's
-(5173, 8000, 7280, 7281). Change them in the env file; nginx's and Quickwit's
-configs were made from it, so move them away and run `brew postinstall
-lumiverb` to make them again.
+(5173, 8000). Change them in the env file; nginx's config was made from it,
+so move it away and run `brew postinstall lumiverb` to make it again.
