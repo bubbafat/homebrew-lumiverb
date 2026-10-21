@@ -98,10 +98,12 @@ brew services stop lumiverb && brew uninstall lumiverb && brew install bubbafat/
 
 | | Port |
 |---|---|
-| Web (nginx) | 6464, this Mac only until Settings › Network says other devices may use it |
-| API | 6465, this Mac only |
+| Web and API (nginx), plain HTTP | 6464, this Mac only until Settings › Network says other devices may use it |
+| Web and API (nginx), HTTPS | 6465, once Settings › Network turns HTTPS on |
+| API itself | 6364, this Mac only (nginx passes requests to it) |
 | PostgreSQL | 6468, Lumiverb's own, this Mac only |
 
 They're clear of Homebrew's PostgreSQL (5432) and a Lumiverb dev checkout's
-(5173, 8000). Change them in the env file; nginx's config was made from it,
-so move it away and run `brew postinstall lumiverb` to make it again.
+(5173, 8000). Where nginx listens, change on Settings › Network. The others
+are the env file's; nginx's config was made from it, so move it away and run
+`brew postinstall lumiverb` to make it again.
