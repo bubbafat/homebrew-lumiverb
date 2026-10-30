@@ -1,8 +1,8 @@
 class Lumiverb < Formula
   desc "Photo and video library server: search, faces and transcripts, on your own Mac"
   homepage "https://github.com/bubbafat/lumiverb"
-  url "https://github.com/bubbafat/lumiverb/archive/refs/tags/v0.1.158.tar.gz"
-  sha256 "1708594c2aee0cb26460135e4117f44f6aa95a635d98ce4417c8954ba308b2d3"
+  url "https://github.com/bubbafat/lumiverb/archive/refs/tags/v0.1.159.tar.gz"
+  sha256 "44aa50e4da5d834e90b358c28e6be08325782e202b110a117f4010540deac1f1"
   license "MIT"
   head "https://github.com/bubbafat/lumiverb.git", branch: "main"
 
